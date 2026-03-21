@@ -1,0 +1,9 @@
+# Hospital Readmission Analytics — Git Ignore
+node_modules/
+.vercel/
+.env
+.DS_Store
+dist/
+build/
+*.log
+.gemini/

@@ -1,0 +1,107 @@
+{
+  "dataset": "hospital_readmission_fhir.csv",
+  "rows": 3000,
+  "features": 29,
+  "train_size": 2400,
+  "test_size": 600,
+  "split": "80/20 stratified",
+  "best_model": "Logistic Regression",
+  "best_f1": 0.2891566265060241,
+  "models": {
+    "Logistic Regression": {
+      "Accuracy": 0.705,
+      "Precision": 0.5902,
+      "Recall": 0.1915,
+      "F1": 0.2892,
+      "AUC-ROC": 0.6611,
+      "CV_F1_mean": 0.2665,
+      "CV_F1_std": 0.0388,
+      "Confusion": [
+        [
+          387,
+          25
+        ],
+        [
+          152,
+          36
+        ]
+      ]
+    },
+    "Decision Tree": {
+      "Accuracy": 0.6367,
+      "Precision": 0.35,
+      "Recall": 0.1862,
+      "F1": 0.2431,
+      "AUC-ROC": 0.5276,
+      "CV_F1_mean": 0.2215,
+      "CV_F1_std": 0.0592,
+      "Confusion": [
+        [
+          347,
+          65
+        ],
+        [
+          153,
+          35
+        ]
+      ]
+    },
+    "Random Forest": {
+      "Accuracy": 0.69,
+      "Precision": 0.625,
+      "Recall": 0.0266,
+      "F1": 0.051,
+      "AUC-ROC": 0.6125,
+      "CV_F1_mean": 0.0599,
+      "CV_F1_std": 0.0198,
+      "Confusion": [
+        [
+          409,
+          3
+        ],
+        [
+          183,
+          5
+        ]
+      ]
+    },
+    "Gradient Boosting (GBM)": {
+      "Accuracy": 0.655,
+      "Precision": 0.3855,
+      "Recall": 0.1702,
+      "F1": 0.2362,
+      "AUC-ROC": 0.5672,
+      "CV_F1_mean": 0.2848,
+      "CV_F1_std": 0.0307,
+      "Confusion": [
+        [
+          361,
+          51
+        ],
+        [
+          156,
+          32
+        ]
+      ]
+    },
+    "K-Nearest Neighbours": {
+      "Accuracy": 0.6683,
+      "Precision": 0.4321,
+      "Recall": 0.1862,
+      "F1": 0.2602,
+      "AUC-ROC": 0.5671,
+      "CV_F1_mean": 0.2702,
+      "CV_F1_std": 0.0358,
+      "Confusion": [
+        [
+          366,
+          46
+        ],
+        [
+          153,
+          35
+        ]
+      ]
+    }
+  }
+}

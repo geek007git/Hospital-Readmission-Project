@@ -1,484 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hospital Readmission Analytics | Clinical AI Dashboard</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <!-- PapaParse -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#183d36">
+  <meta name="description" content="CareSync — patient readmission risk, cohort analytics, and care reviews in one focused workspace.">
+  <title>Overview · CareSync</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="brand">
-                <i class='bx bxs-component'></i>
-                <span>CareSync</span>
-            </div>
-            
-            <ul class="nav-menu">
-                <li class="nav-item active" data-target="view-dashboard">
-                    <a href="#"><i class='bx bx-grid-alt'></i> Dashboard</a>
-                </li>
-                <li class="nav-item" data-target="view-patients">
-                    <a href="#"><i class='bx bx-user'></i> Patient Ledger</a>
-                </li>
-                <li class="nav-item" data-target="view-analytics">
-                    <a href="#"><i class='bx bx-line-chart'></i> Diagnostics</a>
-                </li>
-                <li class="nav-item" data-target="view-reports">
-                    <a href="#"><i class='bx bx-layer'></i> AI Reports</a>
-                </li>
-                <li class="nav-item" data-target="view-discharge">
-                    <a href="#"><i class='bx bx-exit'></i> Discharge Protocol</a>
-                </li>
-                <li class="nav-item" data-target="view-chat">
-                    <a href="#"><i class='bx bx-bot'></i> AI Chat <span id="chat-dot" style="display:inline-block;width:7px;height:7px;background:var(--accent-green);border-radius:50%;margin-left:4px;vertical-align:middle;"></span></a>
-                </li>
-            </ul>
-
-            <ul class="sidebar-bottom">
-                <li class="nav-item">
-                    <a href="#"><i class='bx bx-slider-alt'></i> Settings</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#"><i class='bx bx-log-out'></i> Terminate</a>
-                </li>
-            </ul>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <div class="content-wrapper">
-                
-                <!-- Persistent Header -->
-                <header class="top-nav">
-                    <div class="search-bar">
-                        <i class='bx bx-search'></i>
-                        <input type="text" id="global-search" placeholder="Search core identifiers (ID, Diagnosis)...">
-                    </div>
-                    <div class="user-controls">
-                        <div id="data-status">
-                            <i class='bx bx-loader-alt bx-spin' style="color:var(--accent-blue)"></i>
-                            <span style="color:var(--text-secondary)">Awaiting Array Sync</span>
-                        </div>
-                        <div class="user-profile">
-                            <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=253237&color=fff&rounded=true" alt="Profile">
-                            <div class="user-info">
-                                <span class="user-name">Dr. S. Jenkins</span>
-                                <span class="user-role">Lead Data Scientist</span>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- DASHBOARD VIEW -->
-                <div id="view-dashboard" class="page-view active">
-                    <div class="welcome-section">
-                        <div>
-                            <h1>Scientific Overview</h1>
-                            <p>Real-time readmission profiling mapped across the synthesized clinical cohort.</p>
-                        </div>
-                    </div>
-
-                    <!-- Metrics Cards -->
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <h3>Total Discharges</h3>
-                                <div class="metric-icon icon-blue"><i class='bx bx-user-plus'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="kpi-total">--</h2>
-                                <span class="trend positive"><i class='bx bx-up-arrow-alt'></i> Indexed from System Array</span>
-                            </div>
-                        </div>
-                        
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <h3>High Risk Outliers</h3>
-                                <div class="metric-icon icon-red"><i class='bx bx-error-alt'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="kpi-high-risk">--</h2>
-                                <span class="trend negative"><i class='bx bx-target-lock'></i> Critical Clinical Severity</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <h3>Mean Risk Coefficient</h3>
-                                <div class="metric-icon icon-purple"><i class='bx bx-pulse'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="kpi-mean-risk">--</h2>
-                                <span class="trend negative"><i class='bx bx-line-chart-down'></i> Population Baseline</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <h3>Avg Baseline LOS</h3>
-                                <div class="metric-icon icon-green"><i class='bx bx-time-five'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="kpi-los">--</h2>
-                                <span class="trend positive"><i class='bx bx-check-shield'></i> Tracked Hospital Efficiency</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charts Section -->
-                    <div class="charts-section">
-                        <div class="chart-container">
-                            <div class="chart-header">
-                                <h3>Risk Stratification Core By Diagnosis</h3>
-                            </div>
-                            <div class="canvas-wrapper">
-                                <canvas id="trendChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-header">
-                                <h3>Severity Distribution Mapping</h3>
-                            </div>
-                            <div class="canvas-wrapper">
-                                <canvas id="riskChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PATIENTS VIEW -->
-                <div id="view-patients" class="page-view">
-                    <div class="welcome-section">
-                        <div>
-                            <h1>Patient Ledger</h1>
-                            <p>Complete unadulterated dataset containing demographic and vital sign constraints.</p>
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <div class="table-header">
-                            <h3>Ledger Data Stream</h3>
-                            <select id="risk-filter" class="select-styled">
-                                <option value="All">All Risk Strata</option>
-                                <option value="High">Severity: High</option>
-                                <option value="Medium">Severity: Medium</option>
-                                <option value="Low">Severity: Low</option>
-                            </select>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Subject Identifier</th>
-                                        <th>Primary Diagnostic Array</th>
-                                        <th>Discharge Log</th>
-                                        <th>Hemodynamic Output</th>
-                                        <th>Assigned Risk Coefficient</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="all-patient-table-body">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ANALYTICS VIEW -->
-                <div id="view-analytics" class="page-view">
-                    <div class="welcome-section">
-                        <div>
-                            <h1>Correlation Diagnostics</h1>
-                            <p>Plotting continuous physiological variables to detect systemic structural flaws.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="charts-section">
-                        <div class="chart-container">
-                            <div class="chart-header">
-                                <h3>Cohort Age vs. Extrapolated Risk</h3>
-                            </div>
-                            <div class="canvas-wrapper">
-                                <canvas id="ageRiskChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-header">
-                                <h3>Comorbidity Weight vs. Length of Stay</h3>
-                            </div>
-                            <div class="canvas-wrapper">
-                                <canvas id="chronicLosChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-container" style="margin-bottom: 2rem;">
-                        <div class="chart-header">
-                            <h3>Systolic BP Density Curve Intersection</h3>
-                        </div>
-                        <div class="canvas-wrapper" style="height: 350px;">
-                            <canvas id="bpRiskChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- REPORTS VIEW -->
-                <div id="view-reports" class="page-view">
-                    <div class="welcome-section">
-                        <div>
-                            <h1>Automated Synthesis</h1>
-                            <p>NLP-generated executive briefs mapping highest criticality nodes.</p>
-                        </div>
-                        <button class="btn-primary" onclick="alert('Compiling Encrypted PDF...')">
-                            <i class='bx bxs-download'></i> Generate PDF Summary
-                        </button>
-                    </div>
-                    
-                    <div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr);">
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <h3>Most Critical Department</h3>
-                                <div class="metric-icon icon-red"><i class='bx bx-building-house'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="rep-dept">...</h2>
-                                <span class="trend negative">Highest Cumulative Risk Assessed</span>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <h3>Top Aggravating Diagnosis</h3>
-                                <div class="metric-icon icon-orange"><i class='bx bx-dna'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="rep-diag">...</h2>
-                                <span class="trend negative">Leading Co-occurring Variable</span>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <h3>Data Integrity Check</h3>
-                                <div class="metric-icon icon-green"><i class='bx bx-check-double'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2>100%</h2>
-                                <span class="trend positive">All array indices parsed</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="table-container">
-                        <h3>Diagnostic Text Synthesis</h3>
-                        <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.05rem; margin-top: 1.5rem;" id="narrative-report">
-                            Awaiting diagnostic completion array...
-                        </p>
-                    </div>
-                </div>
-
-                <!-- DISCHARGE PROTOCOL VIEW (Nurse-Facing) -->
-                <div id="view-discharge" class="page-view">
-                    <div class="welcome-section">
-                        <div>
-                            <h1>🏥 Nurse Discharge Report</h1>
-                            <p>Review each patient's risk and get a clear <strong>GO / HOLD</strong> discharge recommendation.</p>
-                        </div>
-                        <select id="dc-filter" class="select-styled">
-                            <option value="All">All Patients</option>
-                            <option value="High">🔴 High Risk – HOLD</option>
-                            <option value="Medium">🟠 Medium Risk – Monitor</option>
-                            <option value="Low">🟢 Low Risk – Discharge OK</option>
-                        </select>
-                    </div>
-
-                    <!-- Summary Counters -->
-                    <div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.5rem;">
-                        <div class="metric-card" style="border-left: 4px solid var(--accent-green);">
-                            <div class="metric-header">
-                                <h3>✅ Clear to Discharge</h3>
-                                <div class="metric-icon icon-green"><i class='bx bx-check-circle'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="dc-count-low">--</h2>
-                                <span class="trend positive">Low Risk Patients</span>
-                            </div>
-                        </div>
-                        <div class="metric-card" style="border-left: 4px solid var(--accent-orange);">
-                            <div class="metric-header">
-                                <h3>⚠️ Conditional Discharge</h3>
-                                <div class="metric-icon" style="background:rgba(245,158,11,0.15);color:var(--accent-orange)"><i class='bx bx-info-circle'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="dc-count-med">--</h2>
-                                <span class="trend" style="color:var(--accent-orange)">Medium Risk – Follow-up Needed</span>
-                            </div>
-                        </div>
-                        <div class="metric-card" style="border-left: 4px solid var(--accent-red);">
-                            <div class="metric-header">
-                                <h3>🚨 DO NOT Discharge</h3>
-                                <div class="metric-icon icon-red"><i class='bx bx-block'></i></div>
-                            </div>
-                            <div class="metric-body">
-                                <h2 id="dc-count-high">--</h2>
-                                <span class="trend negative">High Risk – Keep in Ward</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Patient Discharge Table -->
-                    <div class="table-container">
-                        <div class="table-header">
-                            <h3>Patient Discharge List</h3>
-                            <span style="color:var(--text-secondary); font-size:0.85rem;">👆 Click any row to see full details + nurse recommendation</span>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Patient ID</th>
-                                        <th>Age / Sex</th>
-                                        <th>Primary Diagnosis</th>
-                                        <th>LOS (Days)</th>
-                                        <th>Risk Score</th>
-                                        <th>Risk Level</th>
-                                        <th>Discharge Decision</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dc-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Detail Panel -->
-                    <div id="dc-detail-panel" style="display:none; margin-top:1.5rem;">
-                        <div class="table-container">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                                <h3 id="dc-detail-name" style="font-family:'Outfit',sans-serif; font-size:1.4rem;">Patient Details</h3>
-                                <button id="dc-close-btn" style="background:none;border:1px solid var(--border-color);color:var(--text-secondary);padding:0.4rem 1rem;border-radius:6px;cursor:pointer;font-family:inherit;">✕ Close</button>
-                            </div>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem;">
-                                <div>
-                                    <h4 style="color:var(--text-secondary); margin-bottom:1rem; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Clinical Information</h4>
-                                    <table class="data-table">
-                                        <tbody>
-                                            <tr><td style="width:45%"><strong>Age &amp; Gender</strong></td><td id="dc-d-demo">--</td></tr>
-                                            <tr><td><strong>Primary Diagnosis</strong></td><td id="dc-d-diag">--</td></tr>
-                                            <tr><td><strong>ICD Code</strong></td><td id="dc-d-icd">--</td></tr>
-                                            <tr><td><strong>Secondary Diagnoses</strong></td><td id="dc-d-second">--</td></tr>
-                                            <tr><td><strong>Chronic Conditions</strong></td><td id="dc-d-chronic">--</td></tr>
-                                            <tr><td><strong>Length of Stay</strong></td><td id="dc-d-los">--</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div>
-                                    <h4 style="color:var(--text-secondary); margin-bottom:1rem; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Vital Signs</h4>
-                                    <table class="data-table">
-                                        <tbody>
-                                            <tr><td style="width:45%"><strong>Blood Pressure</strong></td><td id="dc-d-bp">--</td></tr>
-                                            <tr><td><strong>Heart Rate</strong></td><td id="dc-d-hr">--</td></tr>
-                                            <tr><td><strong>Risk Score</strong></td><td id="dc-d-score">--</td></tr>
-                                            <tr><td><strong>Risk Level</strong></td><td id="dc-d-level">--</td></tr>
-                                            <tr><td><strong>Department</strong></td><td id="dc-d-dept">--</td></tr>
-                                            <tr><td><strong>Discharge Date</strong></td><td id="dc-d-date">--</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Nurse Recommendation Box -->
-                            <div id="dc-nurse-box" style="margin-top:1.5rem; padding:2rem; border-radius:16px; text-align:center; transition: all 0.3s;">
-                                <div style="font-size:3.5rem; margin-bottom:0.5rem;" id="dc-nurse-emoji">✅</div>
-                                <h2 style="font-family:'Outfit',sans-serif; font-size:2rem; margin-bottom:0.5rem; font-weight:800;" id="dc-nurse-title">SAFE TO DISCHARGE</h2>
-                                <p style="font-size:1rem; max-width:600px; margin:0 auto; color:var(--text-secondary);" id="dc-nurse-desc">Awaiting patient selection...</p>
-                                <div style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;" id="dc-nurse-actions"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI CHAT VIEW -->
-                <div id="view-chat" class="page-view">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:1.2rem;">
-                        <div style="display:flex; flex-direction:column; gap:0.3rem;">
-                            <h2 style="margin:0; font-family:'Outfit',sans-serif; font-weight:700; color:#fff; font-size:1.6rem;">CareSync AI Advisor <span style="font-size:0.75rem; vertical-align:middle; background:rgba(59,130,246,0.1); color:var(--accent-blue); padding:0.2rem 0.6rem; border-radius:100px; border:1px solid rgba(59,130,246,0.2); margin-left:0.5rem;">V2.0.4 (120B)</span></h2>
-                            <p style="margin:0; font-size:0.85rem; color:var(--text-secondary)">Natural language clinical intelligence analyzing 3,000 live patient records.</p>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:0.8rem;">
-                            <div id="gemini-key-status" style="display:flex; align-items:center; gap:0.6rem; background:rgba(255,255,255,0.03); padding:0.5rem 1rem; border-radius:12px; font-size:0.75rem; border:1px solid var(--border-color);">
-                                <span style="width:7px; height:7px; border-radius:50%; background:var(--accent-green); box-shadow:0 0 10px var(--accent-green);" id="key-indicator"></span>
-                                <span id="key-text" style="color:var(--text-secondary); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">AI ENGINE: SECURE BACKEND</span>
-                            </div>
-                            <button id="chat-clear-btn" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); padding:0.5rem 1rem; border-radius:12px; font-size:0.8rem; cursor:pointer; font-weight:600; transition:all 0.3s ease;">
-                                <i class='bx bx-history'></i> Reset Session
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- AI System Status (Replaces Gemini Setup) -->
-                    <div id="ai-system-alert" style="display:none; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.2); padding:1rem 1.5rem; border-radius:12px; margin-bottom:1.5rem;">
-                        <div style="display:flex; align-items:center; gap:1.2rem;">
-                            <div style="font-size:1.5rem; filter:drop-shadow(0 0 5px var(--accent-red));">⚠️</div>
-                            <div style="flex:1;">
-                                <h4 style="margin:0; font-family:'Outfit',sans-serif; color:var(--accent-red); font-size:0.95rem;">System Configuration Incomplete</h4>
-                                <p style="margin:0; font-size:0.8rem; color:var(--text-secondary)">The 120B Clinical Engine requires an API key in the Vercel backend. Currently operating in Basic matching mode.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Suggested questions -->
-                    <div id="chat-suggestions" style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
-                        <button class="chat-suggest-btn" data-q="How many high risk patients are there?">🔴 High risk count?</button>
-                        <button class="chat-suggest-btn" data-q="What is the average length of stay?">🕐 Avg LOS?</button>
-                        <button class="chat-suggest-btn" data-q="Which department has the most high risk patients?">🏥 Riskiest department?</button>
-                        <button class="chat-suggest-btn" data-q="What is the most common diagnosis?">🩺 Top diagnosis?</button>
-                        <button class="chat-suggest-btn" data-q="How many patients can be safely discharged?">✅ Safe to discharge?</button>
-                        <button class="chat-suggest-btn" data-q="What is the mean risk score?">📊 Mean risk score?</button>
-                        <button class="chat-suggest-btn" data-q="Show me patients older than 70 with high risk">👴 Elderly high risk?</button>
-                        <button class="chat-suggest-btn" data-q="Which gender has higher readmission risk?">⚥ Gender risk breakdown?</button>
-                    </div>
-
-                    <!-- Chat window -->
-                    <div class="table-container" style="padding:0;overflow:hidden;display:flex;flex-direction:column;height:520px;">
-                        <div id="chat-messages" style="flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;">
-                            <div class="chat-msg bot">
-                                <div class="chat-avatar bot-avatar"><i class='bx bx-bot'></i></div>
-                                <div class="chat-bubble bot-bubble">
-                                    <strong>CareSync AI</strong>
-                                    <p>Hello! 👋 I'm your clinical data assistant. I have access to all <strong id="chat-total-patients">--</strong> patient records. Ask me anything about risk levels, diagnoses, vitals, or discharge decisions!</p>
-                                    <div class="chat-time">Just now</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Typing indicator -->
-                        <div id="chat-typing" style="display:none;padding:0 1.5rem 0.5rem;">
-                            <div style="display:flex;align-items:center;gap:0.5rem;color:var(--text-secondary);font-size:0.85rem;">
-                                <div class="typing-dots"><span></span><span></span><span></span></div>
-                                CareSync AI is thinking...
-                            </div>
-                        </div>
-
-                        <!-- Input area -->
-                        <div style="border-top:1px solid var(--border-color);padding:1rem 1.5rem;display:flex;gap:0.75rem;align-items:center;background:var(--bg-surface);">
-                            <input type="text" id="chat-input" placeholder="Ask about patients, risks, diagnoses..." style="flex:1;background:var(--bg-base);border:1px solid var(--border-color);color:var(--text-primary);padding:0.75rem 1.25rem;border-radius:100px;font-family:inherit;font-size:0.95rem;outline:none;" />
-                            <button id="chat-send-btn" style="background:var(--accent-blue);color:#fff;border:none;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.2s;">
-                                <i class='bx bx-send'></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </main>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.87M15 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-5 4 3 6-8"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="18" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H3l2-5a8.5 8.5 0 1 1 16-3.5Z"/><path d="M8 10h8M8 14h5"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18M8 15h2m4 0h2"/></symbol>
+    <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16M2 21h20M9 21v-4h6v4M8 7h1m6 0h1M8 11h1m6 0h1"/></symbol>
+    <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2 12h5l3-8 4 16 3-8h5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m10.3 4-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3l-8-14a2 2 0 0 0-3.4 0ZM12 9v4m0 4h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9L2 9l20-7ZM11 13 22 2"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4m.1 3h.01"/></symbol>
+  </svg>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview" aria-label="CareSync overview"><span class="brand-mark"><span></span><span></span><span></span><span></span></span>CareSync<span class="brand-period">.</span></a>
+      <div class="workspace-label">CLINICAL WORKSPACE</div>
+      <nav class="nav-menu">
+        <a href="#overview" class="nav-link active" data-view="overview"><svg class="icon"><use href="#i-grid"/></svg>Overview</a>
+        <a href="#patients" class="nav-link" data-view="patients"><svg class="icon"><use href="#i-users"/></svg>Patients<span class="nav-count" id="nav-patient-count">—</span></a>
+        <a href="#analytics" class="nav-link" data-view="analytics"><svg class="icon"><use href="#i-chart"/></svg>Risk analytics</a>
+        <a href="#discharge" class="nav-link" data-view="discharge"><svg class="icon"><use href="#i-clipboard"/></svg>Care reviews<span class="nav-dot"></span></a>
+        <a href="#reports" class="nav-link" data-view="reports"><svg class="icon"><use href="#i-file"/></svg>Reports</a>
+        <div class="nav-divider"></div><span class="nav-section-label">TOOLS</span>
+        <a href="#chat" class="nav-link" data-view="chat"><svg class="icon"><use href="#i-chat"/></svg>Data assistant<span class="small-tag">BETA</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="workspace-card"><span class="workspace-card-icon"><svg class="icon"><use href="#i-building"/></svg></span><div><strong>Hospital network</strong><span>Readmission analytics</span></div><span class="status-dot"></span></div>
+        <a href="#settings" class="nav-link" data-view="settings"><svg class="icon"><use href="#i-settings"/></svg>Preferences</a>
+        <button class="nav-link" id="help-button"><svg class="icon"><use href="#i-help"/></svg>About this workspace<svg class="icon external-arrow"><use href="#i-arrow"/></svg></button>
+        <div class="sidebar-profile"><div class="avatar">CT</div><div><strong>Care team</strong><span>Clinical workspace</span></div><span class="profile-badge">LOCAL</span></div>
+      </div>
+    </aside>
+    <button class="sidebar-scrim" id="sidebar-scrim" aria-label="Close navigation" hidden></button>
+    <div class="main-shell">
+      <header class="topbar"><div class="breadcrumb"><button class="icon-button mobile-menu" id="menu-button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar"><svg class="icon"><use href="#i-menu"/></svg></button><span>Workspace</span><svg class="icon"><use href="#i-chevron"/></svg><strong id="breadcrumb-current">Overview</strong></div><div class="topbar-actions"><span class="data-status" id="data-status" role="status"><span class="status-dot"></span>Loading dataset</span><span class="topbar-divider"></span><button class="icon-button" id="search-shortcut" aria-label="Search patients"><svg class="icon"><use href="#i-search"/></svg></button><div class="avatar avatar-small" aria-label="Care team">CT</div></div></header>
+      <main id="main-content" tabindex="-1">
+        <div id="load-error" class="error-banner" hidden><svg class="icon"><use href="#i-alert"/></svg><div><strong>Patient data could not be loaded.</strong><p>Check your connection and try again. Open this app through the local server or Vercel.</p></div><button class="button secondary" id="retry-button">Try again</button></div>
+        <div class="page-heading"><div><div class="eyebrow" id="page-eyebrow">YOUR NETWORK, AT A GLANCE</div><h1 id="page-title">Overview</h1><p id="page-description">A clearer picture of readmission risk. A better place to plan care.</p></div><div class="heading-actions"><button class="button secondary" id="export-button"><svg class="icon"><use href="#i-download"/></svg>Export data</button><button class="button primary" id="review-button">Review patients<svg class="icon"><use href="#i-arrow"/></svg></button></div></div>
+        <div class="filter-bar" id="cohort-controls"><div class="filter-controls"><label class="filter-select"><svg class="icon"><use href="#i-building"/></svg><select id="hospital-filter" aria-label="Filter by hospital"><option value="all">All hospitals</option></select><svg class="icon select-chevron"><use href="#i-down"/></svg></label><label class="filter-select date-select"><svg class="icon"><use href="#i-calendar"/></svg><select id="period-filter" aria-label="Filter by discharge period"><option value="all">Full dataset</option><option value="12">Latest 12 months</option><option value="6">Latest 6 months</option></select><svg class="icon select-chevron"><use href="#i-down"/></svg></label><button class="text-button reset-filters" id="reset-filters" hidden>Reset filters</button></div><span class="dataset-caption"><span class="tiny-dot"></span><span id="dataset-date">Reading discharge records…</span></span></div>
+        <section id="view-overview" class="page-view active" aria-label="Overview">
+          <div class="metrics-grid">
+            <article class="metric-card"><div class="metric-label">Total patients<svg class="icon"><use href="#i-users"/></svg></div><div class="metric-value" id="kpi-total">—</div><div class="metric-bottom"><span>In the selected cohort</span><div class="sparkline" id="spark-total"></div></div></article>
+            <article class="metric-card"><div class="metric-label">High-risk patients<svg class="icon"><use href="#i-alert"/></svg></div><div class="metric-value" id="kpi-high-risk">—</div><div class="metric-bottom"><span><span class="metric-pill" id="high-percentage">—</span> of cohort</span><div class="sparkline coral" id="spark-high"></div></div></article>
+            <article class="metric-card"><div class="metric-label">Average risk score<svg class="icon"><use href="#i-pulse"/></svg></div><div class="metric-value" id="kpi-mean-risk">—</div><div class="metric-bottom"><span>Estimated readmission risk</span><div class="sparkline" id="spark-risk"></div></div></article>
+            <article class="metric-card"><div class="metric-label">Average length of stay<svg class="icon"><use href="#i-clock"/></svg></div><div class="metric-value" id="kpi-los">—</div><div class="metric-bottom"><span>Admission to discharge</span><div class="sparkline" id="spark-los"></div></div></article>
+          </div>
+          <div class="overview-charts">
+            <article class="panel trend-panel"><div class="panel-heading"><div><h2>Readmission trends</h2><p>Observed readmissions within 30 days of discharge</p></div><div class="segmented" aria-label="Chart grouping"><button class="active" data-group="month" aria-pressed="true">Monthly</button><button data-group="quarter" aria-pressed="false">Quarterly</button></div></div><div class="chart-meta"><span class="legend-item"><i class="legend-line"></i>Readmission rate</span><span id="trend-summary" class="chart-summary"></span></div><div id="trend-chart" class="trend-chart" aria-label="Readmission rate by discharge period"></div><div class="chart-footnote">Based on recorded outcomes, grouped by discharge date.</div></article>
+            <article class="panel risk-panel"><div class="panel-heading"><div><h2>Risk distribution</h2><p>Patients by readmission risk level</p></div><button class="icon-button" data-go="analytics" aria-label="View risk analytics"><svg class="icon"><use href="#i-arrow"/></svg></button></div><div class="donut-wrap"><div class="donut" id="risk-donut"><div class="donut-center"><strong id="donut-total">—</strong><span>total patients</span></div></div></div><div class="risk-legend" id="risk-legend"></div></article>
+          </div>
+          <article class="panel priority-panel"><div class="panel-heading"><div class="heading-with-count"><h2>Patients to prioritize</h2><span class="count-badge" id="priority-count">—</span><p>Highest estimated readmission risk in your cohort</p></div><button class="text-button" id="view-high-risk">View all patients<svg class="icon"><use href="#i-arrow"/></svg></button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Patient</th><th>Primary diagnosis</th><th>Department</th><th>Length of stay</th><th>Risk score</th><th>Risk level</th><th><span class="sr-only">View details</span></th></tr></thead><tbody id="priority-table"></tbody></table></div><div class="panel-footer"><span><span class="tiny-dot"></span>Prioritized by risk score, highest first</span><span id="priority-footer">Showing 5 patients</span></div></article>
+          <div class="overview-bottom"><article class="panel department-panel"><div class="panel-heading"><div><h2>Across departments</h2><p>Average estimated risk by care department</p></div><button class="text-button" data-go="analytics">Explore<svg class="icon"><use href="#i-arrow"/></svg></button></div><div id="department-bars" class="department-bars"></div></article><article class="care-note"><span class="note-icon"><svg class="icon"><use href="#i-clipboard"/></svg></span><span class="eyebrow">FROM INSIGHT TO ACTION</span><h2>Make the next<br>care decision count.</h2><p>Bring patient context and risk factors into one focused review.</p><button class="text-button" data-go="discharge">Open care reviews<svg class="icon"><use href="#i-arrow"/></svg></button><div class="note-decoration" aria-hidden="true">+</div></article></div>
+        </section>
+        <section id="view-patients" class="page-view" aria-label="Patients" hidden>
+          <article class="panel"><div class="patient-toolbar"><label class="search-field"><svg class="icon"><use href="#i-search"/></svg><input id="patient-search" type="search" placeholder="Search ID, diagnosis, or department…" aria-label="Search patients"><kbd>/</kbd></label><div class="table-filters"><label class="sr-only" for="risk-filter">Risk level</label><select id="risk-filter" class="native-select"><option value="all">All risk levels</option><option>High</option><option>Medium</option><option>Low</option></select><label class="sr-only" for="patient-sort">Sort patients</label><select id="patient-sort" class="native-select"><option value="risk-desc">Highest risk first</option><option value="risk-asc">Lowest risk first</option><option value="date-desc">Latest discharge</option><option value="id-asc">Patient ID</option></select></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Patient</th><th>Primary diagnosis</th><th>Department</th><th>Discharged</th><th>Risk score</th><th>Risk level</th><th><span class="sr-only">View details</span></th></tr></thead><tbody id="patient-table"></tbody></table></div><div class="pagination"><span id="patient-page-info"></span><div><button class="button secondary small" id="patient-prev"><svg class="icon flip"><use href="#i-chevron"/></svg>Previous</button><span id="patient-page-number"></span><button class="button secondary small" id="patient-next">Next<svg class="icon"><use href="#i-chevron"/></svg></button></div></div></article>
+        </section>
+        <section id="view-analytics" class="page-view" aria-label="Risk analytics" hidden><div class="section-callout"><svg class="icon"><use href="#i-info"/></svg><p>Risk scores are estimates included in the dataset. The charts describe the selected cohort and do not establish causation.</p></div><div class="analytics-grid"><article class="panel"><div class="panel-heading"><div><h2>Risk by primary diagnosis</h2><p>Average score across all diagnoses</p></div></div><div id="diagnosis-chart" class="horizontal-chart"></div></article><article class="panel"><div class="panel-heading"><div><h2>Risk across age groups</h2><p>Average risk and patient count by age</p></div></div><div id="age-chart" class="horizontal-chart"></div><div class="panel-heading analytics-subheading"><div><h2>Length of stay</h2><p>Average days by risk level</p></div></div><div id="los-chart" class="los-cards"></div></article></div><article class="panel"><div class="panel-heading"><div><h2>Department comparison</h2><p>Patient volume, estimated risk, and recorded outcomes</p></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Department</th><th>Patients</th><th>High-risk patients</th><th>Average risk</th><th>30-day readmissions</th><th>Average stay</th></tr></thead><tbody id="department-table"></tbody></table></div></article></section>
+        <section id="view-discharge" class="page-view" aria-label="Care reviews" hidden><div class="review-summary" id="review-summary"></div><article class="panel"><div class="panel-heading"><div><h2>Patient review queue</h2><p>Review clinical context and keep a local note for your team.</p></div><label><span class="sr-only">Review status</span><select id="review-filter" class="native-select"><option value="pending">Awaiting review</option><option value="reviewed">Reviewed locally</option><option value="all">All patients</option></select></label></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Patient</th><th>Primary diagnosis</th><th>Department</th><th>Risk level</th><th>Review status</th><th><span class="sr-only">View details</span></th></tr></thead><tbody id="review-table"></tbody></table></div><div class="pagination"><span id="review-page-info"></span><div><button class="button secondary small" id="review-prev">Previous</button><span id="review-page-number"></span><button class="button secondary small" id="review-next">Next</button></div></div></article><p class="workspace-footnote"><svg class="icon"><use href="#i-info"/></svg>Reviews are saved in this browser. Discharge decisions remain with the treating clinical team.</p></section>
+        <section id="view-reports" class="page-view" aria-label="Reports" hidden><article class="panel report-panel"><div class="report-masthead"><div><span class="eyebrow">CARESYNC / COHORT REPORT</span><h2>Readmission risk summary</h2><p id="report-scope"></p></div><button class="button secondary" id="print-report"><svg class="icon"><use href="#i-file"/></svg>Print / Save PDF</button></div><div id="report-content"></div><div class="report-source"><svg class="icon"><use href="#i-info"/></svg><p>Descriptive analysis of the loaded dataset. Risk scores are supplied values; no new predictions are generated by this dashboard.</p></div></article></section>
+        <section id="view-chat" class="page-view" aria-label="Data assistant" hidden><div class="assistant-layout"><article class="panel chat-panel"><div class="panel-heading"><div class="assistant-label"><span class="assistant-icon"><svg class="icon"><use href="#i-chat"/></svg></span><div><h2>Ask your data</h2><p id="assistant-status">Dataset questions, answered in context</p></div></div><button class="text-button" id="chat-clear-btn">Clear conversation</button></div><div id="chat-messages" class="chat-messages" role="log" aria-live="polite"></div><form id="chat-form" class="chat-form"><label class="sr-only" for="chat-input">Ask a question about this cohort</label><input id="chat-input" placeholder="Ask about your patient cohort…" maxlength="2000" autocomplete="off" required><button class="button primary" type="submit" id="chat-send-btn" aria-label="Send message"><svg class="icon"><use href="#i-send"/></svg></button></form><p class="chat-disclaimer">For exploring data. Clinical decisions require professional review.</p></article><aside class="assistant-guide"><span class="eyebrow">A GOOD PLACE TO START</span><h2>Small questions.<br>Useful answers.</h2><p>Explore the cohort currently selected in your filters.</p><button class="suggestion" data-question="How many high-risk patients are there?">How many patients are high risk?<svg class="icon"><use href="#i-arrow"/></svg></button><button class="suggestion" data-question="What is the average length of stay?">What is the average stay?<svg class="icon"><use href="#i-arrow"/></svg></button><button class="suggestion" data-question="Which department has the highest average risk?">Which department has the highest risk?<svg class="icon"><use href="#i-arrow"/></svg></button><button class="suggestion" data-question="What is the most common diagnosis?">What is the most common diagnosis?<svg class="icon"><use href="#i-arrow"/></svg></button></aside></div></section>
+        <section id="view-settings" class="page-view" aria-label="Preferences" hidden><article class="panel preferences-panel"><div class="panel-heading"><div><h2>Make yourself at home</h2><p>Preferences are saved in this browser.</p></div></div><div class="setting-row"><div><h3>Compact patient tables</h3><p>Fit more patient records on your screen.</p></div><label class="switch"><input id="compact-setting" type="checkbox" aria-label="Compact patient tables"><span></span></label></div><div class="setting-row"><div><h3>Rows per page</h3><p>Choose how many records to show in patient tables.</p></div><select id="page-size-setting" class="native-select" aria-label="Rows per page"><option value="10">10 patients</option><option value="25">25 patients</option><option value="50">50 patients</option></select></div><div class="setting-row"><div><h3>Workspace data</h3><p id="settings-dataset">Loading dataset information…</p></div><span class="badge risk-low">CSV source</span></div></article></section>
+        <footer class="main-footer"><span><span class="footer-brand">CareSync.</span> A little clarity. Better care.</span><span>Dataset workspace <span class="footer-dot">·</span> <span id="footer-records">Loading records</span></span></footer>
+      </main>
     </div>
-    
-    <script src="script.js"></script>
+  </div>
+  <dialog id="patient-dialog" class="patient-dialog" aria-labelledby="detail-title"><div class="drawer-header"><div><span class="eyebrow">PATIENT RECORD</span><h2 id="detail-title">Patient details</h2></div><button class="icon-button" id="detail-close" aria-label="Close patient details"><svg class="icon"><use href="#i-close"/></svg></button></div><div id="patient-detail"></div></dialog>
+  <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title"><div class="panel-heading"><h2 id="about-title">A clearer view of care.</h2><button class="icon-button" id="about-close" aria-label="Close about dialog"><svg class="icon"><use href="#i-close"/></svg></button></div><p>CareSync brings the project's hospital readmission dataset into one focused workspace. Filter your cohort, explore recorded outcomes, and review patient context.</p><p>Patient details come from the CSV. Reviews and preferences are stored on this device. The data assistant can answer common questions locally; additional questions use the configured server API.</p><button class="button primary" id="about-done">Back to workspace<svg class="icon"><use href="#i-arrow"/></svg></button></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
 </body>
 </html>

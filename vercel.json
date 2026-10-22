@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/styles.css", "destination": "/dashboard/styles.css" },
+    { "source": "/script.js", "destination": "/dashboard/script.js" },
+    { "source": "/", "destination": "/dashboard/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*\\.csv)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ]
+}

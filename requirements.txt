@@ -1,0 +1,8 @@
+# This project exclusively utilizes native frontend web technologies.
+# The dashboard operates purely on HTML5, CSS3, ES6 JavaScript fetched through a local python directory server.
+
+# It requires NO complex backend dependencies, package managers (NPM/Yarn), or external installation logic.
+# All powerful statistical parsing modules (PapaParse) and Chart visualization logic (Chart.js) are seamlessly served via CDN in index.html.
+
+# Built-in requirement to host locally:
+python>=3.6
